@@ -66,5 +66,41 @@ def most_expensive_baked_good():
     )
     return response
 
+# Route to create new baked goods
+@app.route('/baked_goods', methods=['POST'])
+def create_baked_goods():
+    data = request.form
+    name = data.get('name')
+    price = data.get('price')
+    bakery_id = data.get('bakery_id')
+
+    baked_good = BakedGood(name=name, price=price, bakery_id=bakery_id)
+    db.session.add(baked_good)
+    db.session.commit()
+
+    return jsonify({'message': 'Baked goods created successfully'}), 201
+
+
+# Route to update bakeries
+@app.route('/bakeries/<int:id>', methods=['PATCH'])
+def update_bakery(id):
+    data = request.form
+    name = data.get('name')
+
+    bakery = Bakery.query.get(id)
+    bakery.name = name
+    db.session.commit()
+
+    return jsonify({'message': 'Bakery updated successfully'}), 200
+
+# Route to delete baked goods
+@app.route('/baked_goods/<int:id>', methods=['DELETE'])
+def delete_baked_goods(id):
+    baked_good = BakedGood.query.get(id)
+    db.session.delete(baked_good)
+    db.session.commit()
+
+    return jsonify({'message': 'Baked goods deleted successfully'}), 200
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
